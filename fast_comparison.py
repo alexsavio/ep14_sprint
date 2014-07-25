@@ -122,36 +122,43 @@ class SimpleDicomFileDistance(DicomFileDistance):
             log.exception('Error calculating DICOM file distance.')
             
 
-    def group_files(self, file_list):
-        """
-        Gets a list of DICOM file paths and returns a list of lists of DICOM 
-        file paths. Each group contains a set of DICOM files that have
-        exactly the same headers.
+def group_files(file_list):
+    """
+    Gets a list of DICOM file absolute paths and returns a list of lists of DICOM 
+    file paths. Each group contains a set of DICOM files that have
+    exactly the same headers.
 
-        :param file_list: list of file paths
-        
-        """
-        list_of_lists = []
-        while len(file_list)>0:
-            file_path1 = []
-            file_path1.append(file_list.pop())
-            aux_list = copy(file_path1)
-            j = len(file_list)-1
-            while j>0:
-                file_path2 = file_list[j]
-                if self.fit_transform(file_path1[0], file_path2):
-                    aux_list.append(file_path2)
-                    file_list.remove(file_path2)
-                    
-                j-=1
+    :param file_list: list of file paths
+    
+    """
+    dist = SimpleDicomFileDistance()
+
+    list_of_lists = []
+    while len(file_list)>0:
+        file_path1 = []
+        file_path1.append(file_list.pop())
+
+        dist.set_dicom_file1(file_path1[0])
+        aux_list = copy(file_path1)
+        j = len(file_list)-1
+
+        while j>0:
+            file_path2 = file_list[j]
+            dist.set_dicom_file2(file_path2)
+
+            if dist.transform():
+                aux_list.append(file_path2)
+                file_list.remove(file_path2)
                 
-            list_of_lists.append(aux_list)
+            j-=1
             
-        groups_leaders = []
-        for i in range(len(list_of_lists)):
-            groups_leaders.append(list_of_lists[i][0])
+        list_of_lists.append(aux_list)
         
-        return list_of_lists, groups_leaders
+#    groups_leaders = []
+#    for i in range(len(list_of_lists)):
+#        groups_leaders.append(list_of_lists[i][0])
+    
+    return list_of_lists
 
 
 class DicomFilesClustering(object):
@@ -255,29 +262,25 @@ if __name__ == '__main__':
     def test_DicomFileDistance():
 
         from fast_comparison import SimpleDicomFileDistance, DicomFilesClustering
-        import os
-        
+        from os.path import abspath, dirname
+
+        datadir = os.path.join(abspath(dirname(__file__)), 'dicoms')
+        file1 = os.path.join(datadir, 'subj1_01.dcm')
+        file2 = os.path.join(datadir, 'subj2_02.dcm')
+        file3 = os.path.join(datadir, 'subj3_01.dcm')
+        file4 = os.path.join(datadir, 'subj3_02.dcm')
+        file5 = os.path.join(datadir, 'subj3_03.dcm')
+        file6 = os.path.join(datadir, 'subj3_04.dcm')
+
         dist = SimpleDicomFileDistance()
-
-        datadir = '/Users/ayerdi/Desktop/macuto/macuto/dicom'
-        file1 = os.path.join(datadir, 'subj1_01.IMA')
-        file2 = os.path.join(datadir, 'subj1_02.IMA')
-        file3 = os.path.join(datadir, 'subj2_01.IMA')
-        file4 = os.path.join(datadir, 'subj1_03.IMA')
-        file5 = os.path.join(datadir, 'subj1_04.IMA')
-        
         # Metemos todos los ficheros que tengamos en una 
-        lista = [file1, file2, file3, file4, file5]
-        listaadd = [file1, file2, file3, file4, file5]
-        
-        for i in range(25999):
-            lista.extend(listaadd)
+        dcm_files = [file1, file2, file3, file4, file5, file6]
+        groups = dist.group_files(dcm_files)
+        return groups
 
-        groups, groups_leaders = dist.group_files(lista)
-        
-        dcmclus = DicomFilesClustering(groups_leaders)
-        dcmclus._calculate_file_distances()
-        return dcmclus
-        
-        
-    dcmclus = test_DicomFileDistance()
+        #dcmclus = DicomFilesClustering(groups_leaders)
+        #dcmclus._calculate_file_distances()
+        #return dcmclus
+
+    groups = test_DicomFileDistance()
+

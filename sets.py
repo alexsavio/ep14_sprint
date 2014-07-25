@@ -5,7 +5,6 @@ from collections import defaultdict, namedtuple
 
 from config import (DICOM_FILE_EXTENSIONS,
                     OUTPUT_DICOM_EXTENSION)
-from exceptions import FolderNotFound
 from more_collections import ItemSet
 from utils import DicomFile, is_dicom_file
 

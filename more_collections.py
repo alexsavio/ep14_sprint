@@ -1,4 +1,28 @@
+import logging
 from collections import OrderedDict, Callable
+
+log = logging.getLogger(__name__)
+
+
+class ItemSet(object):
+
+    def __iter__(self):
+        return self.items.__iter__()
+
+    def __next__(self):
+        return self.items.__next__()
+
+    def next(self):
+        return self.items.next()
+
+    def __getitem__(self, item):
+        if hasattr(self.items, '__getitem__'):
+            return self.items[item]
+        else:
+            raise log.exception('Item set has no __getitem__ implemented.')
+
+    def __len__(self):
+        return len(self.items)
 
 
 class DefaultOrderedDict(OrderedDict):
