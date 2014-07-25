@@ -275,7 +275,8 @@ if __name__ == '__main__':
         dist = SimpleDicomFileDistance()
         # Metemos todos los ficheros que tengamos en una 
         dcm_files = [file1, file2, file3, file4, file5, file6]
-        groups = dist.group_files(dcm_files)
+
+        groups = group_files(dcm_files)
         return groups
 
         #dcmclus = DicomFilesClustering(groups_leaders)
