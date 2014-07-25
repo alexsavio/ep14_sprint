@@ -102,8 +102,14 @@ class SimpleDicomFileDistance(DicomFileDistance):
     field_weights = DICOM_FIELD_WEIGHTS
 
     def group_files(self, file_list):
-        # We take a list of dicom files path and create a list of groups.
+        """
+        Gets a list of DICOM file paths and returns a list of lists of DICOM 
+        file paths. Each group contains a set of DICOM files that have
+        exactly the same headers.
 
+        :param file_list: list of file paths
+        
+        """
         list_of_lists = []
         while len(file_list)>0:
             file_path1 = []
