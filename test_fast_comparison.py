@@ -25,5 +25,5 @@ def test_SimpleDicomFileDistance():
     #return dcmclus
 
 if __name__ == '__main__':
-    groups = test_DicomFileDistance()
+    groups = test_SimpleDicomFileDistance()
 
