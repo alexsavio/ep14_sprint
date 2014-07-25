@@ -1,4 +1,3 @@
-__author__ = 'Dr. Macuto'
 
 import os
 import logging
@@ -113,16 +112,16 @@ class SimpleDicomFileDistance(DicomFileDistance):
 
         try:
             for field_name in self.field_weights:
-                if (str(getattr(self.dcmf1, field_name)) != str(getattr(self.dcmf2, field_name))):
+                if (str(getattr(self.dcmf1, field_name, '')) != str(getattr(self.dcmf2, field_name, ''))):
                     return False
-                
+
             return True
 
         except Exception as exc:
             log.exception('Error calculating DICOM file distance.')
-            
 
-def group_files(file_list):
+
+def group_files(dcm_files):
     """
     Gets a list of DICOM file absolute paths and returns a list of lists of DICOM 
     file paths. Each group contains a set of DICOM files that have
@@ -130,10 +129,12 @@ def group_files(file_list):
 
     :param file_list: list of file paths
     """
+
     dist = SimpleDicomFileDistance()
 
-    list_of_lists = []
-    while len(file_list)>0:
+    dcm_group_list = []
+    for dcmf in dcm_files:
+
         file_path1 = []
         file_path1.append(file_list.pop())
 
