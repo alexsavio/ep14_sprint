@@ -113,7 +113,7 @@ class SimpleDicomFileDistance(DicomFileDistance):
 
         try:
             for field_name in self.field_weights:
-                if (str(getattr(self.dcmf1, field_name)) != str(getattr(self.dcmf2, field_name))):
+                if (str(getattr(self.dcmf1, field_name, '')) != str(getattr(self.dcmf2, field_name, ''))):
                     return False
                 
             return True
