@@ -129,7 +129,6 @@ def group_files(file_list):
     exactly the same headers.
 
     :param file_list: list of file paths
-    
     """
     dist = SimpleDicomFileDistance()
 
