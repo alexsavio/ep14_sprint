@@ -101,6 +101,27 @@ class SimpleDicomFileDistance(DicomFileDistance):
 
     field_weights = DICOM_FIELD_WEIGHTS
 
+    def transform(self):
+        """
+        Checks the field values in self.dcmf1 and self.dcmf2 and returns True
+        if all the field values are the same, False otherwise.
+
+        :return: bool
+        """
+        if self.dcmf1 is None or self.dcmf2 is None:
+            return np.inf
+
+        try:
+            for field_name in self.field_weights:
+                if (str(getattr(self.dcmf1, field_name)) != str(getattr(self.dcmf2, field_name))):
+                    return False
+                
+            return True
+
+        except Exception as exc:
+            log.exception('Error calculating DICOM file distance.')
+            
+
     def group_files(self, file_list):
         """
         Gets a list of DICOM file paths and returns a list of lists of DICOM 
