@@ -97,69 +97,13 @@ class DicomFileDistance(DistanceMeasure):
             log.exception('Error calculating DICOM file distance.')
             
 
-class SimpleDicomFileDistance(DistanceMeasure):
-    
+class SimpleDicomFileDistance(DicomFileDistance):
+
     field_weights = DICOM_FIELD_WEIGHTS
 
-    def __init__(self):
-        self.dcmf1 = None
-        self.dcmf2 = None
-
-    def fit(self, dcm_file1, dcm_file2):
-        """
-
-        :param dcm_file1: str (path to file) or DicomFile or namedtuple
-
-        :param dcm_file2: str (path to file) or DicomFile or namedtuple
-        """
-        self.set_dicom_file1(dcm_file1)
-        self.set_dicom_file2(dcm_file2)
-
-    def set_dicom_file1(self, dcm_file):
-        """
-        :param dcm_file: str (path to file) or DicomFile or namedtuple
-        """
-        self.dcmf1 = self._read_dcmfile(dcm_file)
-
-    def set_dicom_file2(self, dcm_file):
-        """
-        :param dcm_file: str (path to file) or DicomFile or namedtuple
-        """
-        self.dcmf2 = self._read_dcmfile(dcm_file)
-
-    def _read_dcmfile(self, dcm_file):
-        """
-
-        :param dcm_file:
-        :return:
-        """
-        if isinstance(dcm_file, str):
-            return DicomFile(dcm_file)
-        else:
-            return dcm_file
-
-    def fit_transform(self, file_path1, file_path2):
-        self.fit(file_path1, file_path2)
-        return self.transform()
-
-    def transform(self):
-
-        if self.dcmf1 is None or self.dcmf2 is None:
-            return np.inf
-
-        try:
-            for field_name in self.field_weights:
-                if (str(getattr(self.dcmf1, field_name)) != str(getattr(self.dcmf2, field_name))):
-                    return False
-                
-            return True
-
-        except Exception as exc:
-            log.exception('Error calculating DICOM file distance.')
-            
     def group_files(self, file_list):
         # We take a list of dicom files path and create a list of groups.
-        
+
         list_of_lists = []
         while len(file_list)>0:
             file_path1 = []
