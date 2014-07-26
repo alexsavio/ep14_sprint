@@ -1,4 +1,3 @@
-__author__ = 'Dr. Macuto'
 
 import os
 import logging
@@ -95,7 +94,7 @@ class DicomFileDistance(DistanceMeasure):
 
         except Exception as exc:
             log.exception('Error calculating DICOM file distance.')
-            
+
 
 class SimpleDicomFileDistance(DicomFileDistance):
 
@@ -122,7 +121,7 @@ class SimpleDicomFileDistance(DicomFileDistance):
             log.exception('Error calculating DICOM file distance.')
             
 
-def group_files(file_list):
+def group_files_alex(file_list):
     """
     Gets a list of DICOM file absolute paths and returns a list of lists of DICOM 
     file paths. Each group contains a set of DICOM files that have
@@ -148,7 +147,8 @@ def group_files(file_list):
 
             if dist.transform():
                 aux_list.append(file_path2)
-                file_list.remove(file_path2)
+                #file_list.remove(file_path2)
+                file_list.pop(j)
                 
             j-=1
             
@@ -160,6 +160,37 @@ def group_files(file_list):
     
     return list_of_lists
 
+
+def group_files_borja(dcm_files):
+    """
+    Gets a list of DICOM file absolute paths and returns a list of lists of DICOM
+    file paths. Each group contains a set of DICOM files that have
+    exactly the same headers.
+
+    :param file_list: list of file paths
+    """
+
+    dist = SimpleDicomFileDistance()
+
+    remainers = copy(dcm_files)
+
+    dcm_groups = DefaultOrderedDict(set)
+    while len(remainers) > 0:
+        dcmf1 = remainers.pop()
+        dcm_groups[dcmf1].add(dcmf1)
+
+        j = len(dcm_files)-1
+        dist.set_dicom_file1(dcmf1)
+        while j > 0:
+            dcmf2 = dcm_files[j]
+            dist.set_dicom_file2(dcmf2)
+
+            if dist.transform():
+                dcm_groups[dcmf1].add(dcmf2)
+                dcm_files.pop(j)
+            j -= 1
+
+    return dcm_groups
 
 class DicomFilesClustering(object):
     """A self-organizing set of DICOM files.
