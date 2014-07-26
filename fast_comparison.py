@@ -148,7 +148,8 @@ def group_files(file_list):
 
             if dist.transform():
                 aux_list.append(file_path2)
-                file_list.remove(file_path2)
+                #file_list.remove(file_path2)
+                file_list.pop(j)
                 
             j-=1
             
