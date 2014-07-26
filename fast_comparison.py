@@ -94,7 +94,7 @@ class DicomFileDistance(DistanceMeasure):
 
         except Exception as exc:
             log.exception('Error calculating DICOM file distance.')
-            
+
 
 class SimpleDicomFileDistance(DicomFileDistance):
 
@@ -123,7 +123,7 @@ class SimpleDicomFileDistance(DicomFileDistance):
 
 def group_files(dcm_files):
     """
-    Gets a list of DICOM file absolute paths and returns a list of lists of DICOM 
+    Gets a list of DICOM file absolute paths and returns a list of lists of DICOM
     file paths. Each group contains a set of DICOM files that have
     exactly the same headers.
 
@@ -132,33 +132,25 @@ def group_files(dcm_files):
 
     dist = SimpleDicomFileDistance()
 
-    dcm_group_list = []
-    for dcmf in dcm_files:
+    remainers = copy(dcm_files)
 
-        file_path1 = []
-        file_path1.append(file_list.pop())
+    dcm_groups = DefaultOrderedDict(set)
+    while len(remainers) > 0:
+        dcmf1 = remainers.pop()
+        dcm_groups[dcmf1].add(dcmf1)
 
-        dist.set_dicom_file1(file_path1[0])
-        aux_list = copy(file_path1)
-        j = len(file_list)-1
-
-        while j>0:
-            file_path2 = file_list[j]
-            dist.set_dicom_file2(file_path2)
+        j = len(dcm_files)-1
+        dist.set_dicom_file1(dcmf1)
+        while j > 0:
+            dcmf2 = dcm_files[j]
+            dist.set_dicom_file2(dcmf2)
 
             if dist.transform():
-                aux_list.append(file_path2)
-                file_list.remove(file_path2)
-                
-            j-=1
-            
-        list_of_lists.append(aux_list)
-        
-#    groups_leaders = []
-#    for i in range(len(list_of_lists)):
-#        groups_leaders.append(list_of_lists[i][0])
-    
-    return list_of_lists
+                dcm_groups[dcmf1].add(dcmf2)
+                dcm_files.pop(j)
+            j -= 1
+
+    return dcm_groups
 
 
 class DicomFilesClustering(object):
